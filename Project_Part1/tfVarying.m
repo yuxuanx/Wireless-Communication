@@ -11,9 +11,9 @@ channelResp( x, 0.005, 1, M, N );
 channelResp( x, 0.1, 2, M, N );
 channelResp( x, 0.01, 2, M, N );
 channelResp( x, 0.005, 2, M, N );
-channelResp( x, 0.1, 3, M, N );
-channelResp( x, 0.01, 3, M, N );
-channelResp( x, 0.005, 3, M, N );
+channelResp( x, 0.1, 4, M, N );
+channelResp( x, 0.01, 7, M, N );
+channelResp( x, 0.001 , 3, M, N );
 
 
 
