@@ -4,11 +4,11 @@ ts = 1e-4; % sample interval (s)
 v = 25/3; % transmitter-receiver relative speed (m/s)
 c = 3e8; % speed of light (m/s)
 fd = v*fc/c; % maximum Doppler shift
-Ns = 300; % number of samples in simulation
+Ns = 10000; % number of samples in simulation
 x = (randn(Ns, 1) + sqrt(-1)*randn(Ns, 1))/sqrt(2); % Gaussian noise
 
 %% The filter method
-N = 5; % the length of window 2*N+1
+N = 1000; % the length of window 2*N+1
 % window shape/@rectwin @hamming etc.
 w = window(@rectwin,2*N+1);
 
@@ -45,12 +45,12 @@ c2 = ifft(G_hat.*X);
 %% Simulation task
 %-----fading envelope-----%
 figure
-plot(abs(c1));hold on
+% plot(abs(c1));hold on
 plot(abs(c2));
 
 %-----pdf-----%
 figure
-ksdensity(abs(c1),'support','positive');hold on
+% ksdensity(abs(c1),'support','positive');hold on
 ksdensity(abs(c2),'support','positive');hold on
 xx = 0:0.01:4;
 pf = raylpdf(xx,1/sqrt(2));
@@ -58,21 +58,25 @@ plot(xx,pf);
 
 %-----cdf-----%
 figure
-cdfplot(abs(c1));hold on
+% cdfplot(abs(c1));hold on
 cdfplot(abs(c2));hold on
 cf = raylcdf(xx,1/sqrt(2));
 plot(xx,cf);
 
 %-----autocorrelation-----%
-figure
-subplot(2,1,1);
-autocorr(abs(c1));
-subplot(2,1,2);
-autocorr(abs(c2));
-tt = 0:ts:20*ts;
+tt = 0:ts:500*ts;
 J_autocorr = besselj(0,2*pi*fd*tt);
+% figure
+% plot(0:1000,J_autocorr);
+% figure
+% subplot(2,1,1);
 figure
-plot(0:20,J_autocorr);
+autocorr(c1,500);hold on
+plot(0:500,J_autocorr);
+% subplot(2,1,2);
+figure
+autocorr(c2,500);hold on
+plot(0:500,J_autocorr);
 
 %-----psd-----%
 figure

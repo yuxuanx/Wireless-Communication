@@ -8,7 +8,7 @@ Ns = 10000; % number of samples in simulation
 x = (randn(Ns, 1) + sqrt(-1)*randn(Ns, 1))/sqrt(2); % Gaussian noise
 
 %% The filter method
-N = 1000; % the length of window 2*N+1
+N = 500; % the length of window 2*N+1
 % window shape/@rectwin @hamming etc.
 w = window(@rectwin,2*N+1);
 
@@ -22,7 +22,7 @@ g_hat = g.*w./sqrt(sum(abs(g.*w).^2)); % normalize impulse response
 
 %-----channel gain-----%
 c = conv(x,g_hat); % channel gain
-c = c(2*N+1:end); % discard samples due to filter transients
+c = c(N+1:end-N); % discard samples due to filter transients
 
 %% Simulation task
 %-----fading envelope-----%
@@ -30,7 +30,7 @@ figure
 plot(abs(c));
 xlabel('time samples')
 ylabel('channel gain')
-title('Channel Gain')
+title('Envelope of Channel Gain')
 
 %-----pdf-----%
 figure
@@ -53,19 +53,23 @@ legend('theory','empirical')
 
 %-----autocorrelation-----%
 figure
-autocorr(abs(c));
-tt = 0:ts:20*ts;
+autocorr(c,500);
+tt = 0:ts:500*ts;
 J_autocorr = besselj(0,2*pi*fd*tt);
 hold on
-plot(0:20,J_autocorr);
+plot(0:500,J_autocorr);
 legend('empirical','theory')
 
 %-----psd-----%
 figure
-periodogram(c);
+[pxx,ff] = pwelch(c,[],[],[],2*fd);
+ff = ff-fd;
+plot(ff,10*log10(pxx)+42.5);
 f = -fd:fd/Ns:fd;
 Sc = 1./(pi*fd*sqrt(1-(f/fd).^2)); % Doppler spectrum
 hold on
-ff = f/(floor(fd))+1;
-plot(ff,10*log10(Sc),'r');
+plot(f,10*log10(Sc),'r');grid on
+xlabel('Frequency');
+ylabel('Power/frequency(dB/rad/sample)');
+title('Power Spectrum Decsity Estimate');
 legend('empirical','theory')

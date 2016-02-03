@@ -9,7 +9,7 @@ c  = 3e8;
 Ts = 10^(-4);      % Sample interval
 fs = 1/Ts;
 N  = 1000;         % No. of filter taps
-Ns = 300;         % No. of samples
+Ns = 50000;         % No. of samples
 
 % Compute Doppler Frequency
 fd = (v*fc)/c;
