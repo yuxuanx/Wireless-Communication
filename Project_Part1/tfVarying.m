@@ -12,7 +12,7 @@ channelResp( 0.01, 2, M, N );
 channelResp( 0.005, 2, M, N );
 channelResp( 0.1, 3, M, N );
 channelResp( 0.01, 3, M, N );
-channelResp( 0.005 , 3, M, N );
+channelResp( 0.005, 3, M, N );
 
 
 

@@ -12,7 +12,7 @@ g_hat = g./sqrt(sum(abs(g).^2)); % normalize impulse response
 
 %-----channel gain-----%
 channelGain = conv(x,g_hat); % channel gain
-channelGain = channelGain(5001:5300); % just choose 300 samples
+channelGain = channelGain(1001:1300); % just choose 300 samples
 
 end
 
