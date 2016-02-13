@@ -9,7 +9,7 @@ x = (randn(Ns, 1) + sqrt(-1)*randn(Ns, 1))/sqrt(2); % Gaussian noise
 
 %% The filter method
 tic
-N = 500; % the length of window 2*N+1
+N = 2000; % the length of window 2*N+1
 % window shape/@rectwin @hamming etc.
 w = window(@rectwin,2*N+1);
 
@@ -23,7 +23,7 @@ g_hat = g.*w./sqrt(sum(abs(g.*w).^2)); % normalize impulse response
 
 %-----channel gain-----%
 c1 = conv(x,g_hat); % channel gain
-c1 = c1(2*N+1:end); % discard samples due to filter transients
+c1 = c1(N+1:end-N); % discard samples due to filter transients
 toc
 %% The spectrum method
 tic
@@ -92,7 +92,7 @@ legend('empirical','theory')
 %-----psd-----%
 figure
 subplot(2,1,1);
-[pxx,ff] = pwelch(c1,[],[],[],2*fd);
+[pxx,ff] = pwelch(c1,rectwin(1000),[],[],2*fd);
 ff = ff-fd;
 plot(ff,10*log10(pxx)+42.5);
 f = -fd:fd/Ns:fd;
@@ -104,7 +104,7 @@ ylabel('Power/frequency(dB/rad/sample)');
 title('Power Spectrum Decsity Estimate - Filter Method');
 legend('empirical','theory')
 subplot(2,1,2);
-[pxx,ff] = pwelch(c2,[],[],[],2*fd);
+[pxx,ff] = pwelch(c2,rectwin(1000),[],[],2*fd);
 ff = ff-fd;
 plot(ff,10*log10(pxx)+42.5);
 f = -fd:fd/Ns:fd;
