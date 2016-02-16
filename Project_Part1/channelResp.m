@@ -6,6 +6,7 @@ Cl = zeros(N,M);
 for l = 1:L
     tao = (l-1)*2;
     x = (randn(Ns, 1) + sqrt(-1)*randn(Ns, 1))/sqrt(2); % Gaussian noise
+    
     for k = 1:N
         expo = exp(-1j*2*pi*k*tao/N);
         
