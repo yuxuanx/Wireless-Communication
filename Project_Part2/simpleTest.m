@@ -1,7 +1,7 @@
 clc;clear
 %% Parameters (Do think twice about the parameters Tb)
 N = 64; % number of subcarriers used in OFDM
-Nsym = 10; % total number of OFDM symbols
+Nsym = 1; % total number of OFDM symbols
 Ncp = 5; % length of cyclic prefix (>=4)
 m = 2; % bits per Symbol in QPSK
 fc = 2e9; % carrier frequency
@@ -13,26 +13,21 @@ N0 = 2.07e-20*2; % noise spectral density N0/2
 v = 15; % speed of receiver
 c = 3e8; % speed of light
 M = N*Nsym; % number of time samples
-EbN0 = 0:1:25; % dB
 Ts = 1/fs; % symbol period (minimum according to Sampling Theorem)
-%E = Pt*Ts; % energy per transmitted symbol
-Eb = N0*10.^(EbN0/10); % energy per bit
-E = 2*Eb*pathLoss*N/(N+Ncp);
-%Ts = E/Pt;
+E = Pt*Ts; % energy per transmitted symbol
+Eb = E*(N+Ncp)/(2*pathLoss*N);
 R = N*m/(N+Ncp)/Ts; % data rate
+EbN0 = 10*log10(Eb/N0);
 
-errorRate = zeros(length(E),1);
+iter_num = 1e3;
+errorRate = zeros(iter_num,1);
 
-iter_num = 1e3; % Monte Carlo
-
-parfor i = 1:length(E)
-    er = zeros(iter_num,1);
-    for j = 1:iter_num
+for i = 1:iter_num
 %% Transmitter
 b = randsrc(2*M,1,[-1 1]); % generate data bits to transmit
 % QPSK constellation with Gray-mapping
 b_buffer = buffer(b, m)'; % Group bits into bits per symbol
-s = sqrt(E(i)/2)*(b_buffer(:,1) + b_buffer(:,2)*1j); % bits to symbols
+s = sqrt(E/2)*(b_buffer(:,1) + b_buffer(:,2)*1j); % bits to symbols
 % vectorize symbols into Nsym blocks, each block contains N symbols
 ss = reshape(s,N,Nsym);
 z = sqrt(N/Ts)*ifft(ss); % Generate OFDM Seuqence
@@ -62,9 +57,6 @@ sr = C'*rx + x; % symbols received
 bitReceive(1:2:end) = reshape(sign(real(sr)),M,1);
 bitReceive(2:2:end) = reshape(sign(imag(sr)),M,1);
 % calculate the bit error rate
-er(j) = length(find((bitReceive - b)~=0));
-    end
-    errorRate(i) = sum(er)/(2*M*iter_num);
+errorRate(i) = length(find((bitReceive - b)~=0))/(2*M);
 end
-figure
-semilogy(EbN0,errorRate);
+er = mean(errorRate)
