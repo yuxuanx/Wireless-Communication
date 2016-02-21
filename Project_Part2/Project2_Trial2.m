@@ -30,7 +30,7 @@ index = reshape(index_matrix',2*M/rp,1); % index used for interleaving
 errorRate = zeros(length(E),1);
 iter_num = 1e3; % Monte Carlo
 
-for i = 10:length(E)
+for i = 1:length(E)
     er = zeros(iter_num,1);
     for j = 1:iter_num
 %% Transmitter
@@ -86,9 +86,9 @@ end
 bitReceive(1:2:end) = sign(real(symML));
 bitReceive(2:2:end) = sign(imag(symML));
 % deinterleaving
-bitReceive = bitReceive(index_matrix);
+bitReceive = bitReceive(reshape(index_matrix',1,2*M/rp));
 % maximum ratio combining
-bitDecoded = sum(bitReceive,2);
+bitDecoded = sum(reshape(bitReceive,2*M,4),2);
 % decode repetition code
 bitDecoded(bitDecoded<0) = -1;
 bitDecoded(bitDecoded>=0) = 1;
