@@ -1,7 +1,7 @@
 clc;clear
 %% Parameters (Do think twice about the parameters Tb)
 N = 64; % number of subcarriers used in OFDM
-Nsym = 10; % total number of OFDM symbols
+Nsym = 1; % total number of OFDM symbols
 Ncp = 6; % length of cyclic prefix (>=4)
 m = 2; % bits per Symbol in QPSK
 fc = 2e9; % carrier frequency
@@ -13,7 +13,7 @@ N0 = 2.07e-20*2; % noise spectral density N0/2
 v = 15; % speed of receiver
 c = 3e8; % speed of light
 M = N*Nsym; % number of time samples
-EbN0 = 0:1:25; % dB
+EbN0 = 0:1:20; % dB
 Ts = 1/fs; % symbol period (minimum according to Sampling Theorem)
 %E = Pt*Ts; % energy per transmitted symbol
 Eb = N0*10.^(EbN0/10); % energy per bit
@@ -22,7 +22,7 @@ ts = E/Pt;
 % R = N*m/(N+Ncp)./ts; % data rate
 
 %-----Repetition and Interleaving-----%
-rp = 1/4; % code rate used in repetition code
+rp = 1/8; % code rate used in repetition code
 index_matrix = reshape(1:2*M/rp,2*M,1/rp);
 index = reshape(index_matrix',2*M/rp,1); % index used for interleaving
 
@@ -68,7 +68,7 @@ rx = sqrt(ts(i)/N)*fft(y); % FFT
 x = sqrt(N0/2)*(randn(N,Nsym/rp) + 1i*randn(N,Nsym/rp)); % AWGN Channel
 bitReceive = zeros(2*M/rp,1); % bits received
 sr = C'*(rx + x); % symbols received
- 
+
 %-----soft decision making-----%
 sym = zeros(N,Nsym/rp);
 for k = 1:Nsym/rp
@@ -88,7 +88,7 @@ bitReceive(2:2:end) = sign(imag(symML));
 % deinterleaving
 bitReceive = bitReceive(reshape(index_matrix',1,2*M/rp));
 % maximum ratio combining
-bitDecoded = sum(reshape(bitReceive,2*M,4),2);
+bitDecoded = sum(reshape(bitReceive,2*M,1/rp),2);
 % decode repetition code
 bitDecoded(bitDecoded<0) = -1;
 bitDecoded(bitDecoded>=0) = 1;
