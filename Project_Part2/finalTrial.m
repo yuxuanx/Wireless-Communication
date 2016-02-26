@@ -1,7 +1,7 @@
 clc;clear
 %% Parameters (Do think twice about the parameters Tb)
-N = 64; % number of subcarriers used in OFDM
-Nsym = 10; % total number of OFDM symbols
+N = 256; % number of subcarriers used in OFDM
+Nsym = 100; % total number of OFDM symbols
 Ncp = 4; % length of cyclic prefix (>=4)
 m = 2; % bits per Symbol in QPSK
 fc = 2e9; % carrier frequency
@@ -68,7 +68,11 @@ x = sqrt(N0/2)*(randn(N,Nsym/rp) + 1i*randn(N,Nsym/rp)); % AWGN Channel
 sr = C'*(rx+x); % symbols received
 
 %-----soft decision making-----%
-sym = reshape(sr,M/rp,1);
+% sym = zeros(N,Nsym/rp);
+% for k = 1:Nsym/rp
+% sym(:,k) = sr(:,k)*sqrt(pathLoss)./(abs(diag(C)).^2);
+% end
+sym = reshape(sr,M/rp,1)./repmat(abs(diag(C)).^2,Nsym/rp,1);
 symNorm = sym/sqrt(Eb(i));
 
 symbols = zeros(2*length(symNorm),1);
